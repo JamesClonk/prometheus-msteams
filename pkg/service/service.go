@@ -82,6 +82,7 @@ func (s simpleService) post(ctx context.Context, c card.Office365ConnectorCard, 
 		err = fmt.Errorf("failed to creating a request: %w", err)
 		return pr, err
 	}
+	req.Header.Set("Content-Type", "application/json")
 
 	resp, err := s.client.Do(req)
 	if err != nil {
@@ -114,48 +115,49 @@ func splitOffice365Card(c card.Office365ConnectorCard) ([]card.Office365Connecto
 
 	var cards []card.Office365ConnectorCard
 
-	// marshal cards in order to get the byte size
-	cb, err := json.Marshal(c)
-	if err != nil {
-		return nil, err
-	}
+	// // marshal cards in order to get the byte size
+	// cb, err := json.Marshal(c)
+	// if err != nil {
+	// 	return nil, err
+	// }
 
-	// Everything is good.
-	if (len(c.Sections) < maxCardSections) && (len(cb) < maxSize) {
-		cards = append(cards, c)
-		return cards, nil
-	}
+	cards = append(cards, c)
+	// // Everything is good.
+	// if (len(c.Sections) < maxCardSections) && (len(cb) < maxSize) {
+	// 	cards = append(cards, c)
+	// 	return cards, nil
+	// }
 
-	indexAdded := make(map[int]bool)
+	// indexAdded := make(map[int]bool)
 
-	// Here, we keep creating a new card until all sections are transferred into a new card.
-	for len(indexAdded) != len(c.Sections) {
-		newCard := c // take all the attributes
-		newCard.Sections = nil
+	// // Here, we keep creating a new card until all sections are transferred into a new card.
+	// for len(indexAdded) != len(c.Sections) {
+	// 	newCard := c // take all the attributes
+	// 	newCard.Sections = nil
 
-		for i, s := range c.Sections {
-			if _, ok := indexAdded[i]; ok { // check if the index is already added.
-				continue
-			}
+	// 	for i, s := range c.Sections {
+	// 		if _, ok := indexAdded[i]; ok { // check if the index is already added.
+	// 			continue
+	// 		}
 
-			// marshal cards in order to get the byte size
-			newCardb, err := json.Marshal(newCard)
-			if err != nil {
-				return nil, err
-			}
+	// 		// marshal cards in order to get the byte size
+	// 		newCardb, err := json.Marshal(newCard)
+	// 		if err != nil {
+	// 			return nil, err
+	// 		}
 
-			// If the max length or size has exceeded the limit,
-			// break the loop so we can create a new card again.
-			if (len(newCard.Sections) >= maxCardSections) || (len(newCardb) >= maxSize) {
-				break
-			}
+	// 		// If the max length or size has exceeded the limit,
+	// 		// break the loop so we can create a new card again.
+	// 		if (len(newCard.Sections) >= maxCardSections) || (len(newCardb) >= maxSize) {
+	// 			break
+	// 		}
 
-			newCard.Sections = append(newCard.Sections, s)
-			indexAdded[i] = true
-		}
+	// 		newCard.Sections = append(newCard.Sections, s)
+	// 		indexAdded[i] = true
+	// 	}
 
-		cards = append(cards, newCard)
-	}
+	// 	cards = append(cards, newCard)
+	// }
 
 	return cards, nil
 }

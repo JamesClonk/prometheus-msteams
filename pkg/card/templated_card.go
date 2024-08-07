@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"os"
 	"strings"
@@ -41,9 +40,9 @@ func (m *templatedCard) Convert(ctx context.Context, promAlert webhook.Message) 
 		return Office365ConnectorCard{}, err
 	}
 
-	if card.Type != "MessageCard" {
-		return Office365ConnectorCard{}, errors.New("only MessageCard type is supported")
-	}
+	// if card.Type != "MessageCard" {
+	// 	return Office365ConnectorCard{}, errors.New("only MessageCard type is supported")
+	// }
 
 	return card, nil
 }

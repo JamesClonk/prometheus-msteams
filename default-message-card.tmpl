@@ -4,7 +4,7 @@
   "@context": "http://schema.org/extensions",
   "themeColor": "{{- if eq .Status "resolved" -}}2DC72D
                  {{- else if eq .Status "firing" -}}
-                    {{- if eq .CommonLabels.severity "critical" -}}8C1A1A
+                    {{- if eq .CommonLabels.severity "critical" -}}DD1A1A
                     {{- else if eq .CommonLabels.severity "warning" -}}FFA500
                     {{- else -}}808080{{- end -}}
                  {{- else -}}808080{{- end -}}",
@@ -21,7 +21,7 @@
               {{- else -}}
                   {{- .CommonAnnotations.summary -}}
               {{- end -}}",
-  "title": "Prometheus Alert ({{ .Status | title }})",
+  "title": "Prometheus Alert ({{ .Status | title }}) - {{ .CommonLabels.alertname }}{{- if .CommonLabels.job -}} for {{ .CommonLabels.job }}{{ end }}",
   "sections": [ {{$externalUrl := .ExternalURL}}
   {{- range $index, $alert := .Alerts }}{{- if $index }},{{- end }}
     {

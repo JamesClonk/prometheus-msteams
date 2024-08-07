@@ -71,7 +71,7 @@ run:
 	go run cmd/server/main.go -http-addr=localhost:2000 $(RUN_ARGS)
 
 run-test-config:
-	go run cmd/server/main.go -http-addr=localhost:2000 -config-file ./test-connectors.yaml
+	go run cmd/server/main.go -http-addr=localhost:2000 -config-file ./test-connectors.yaml -template-file ./test-template.tmpl -validate-webhook-url=false
 
 fmt:
 	gofmt -w $(GOFMT_FILES)

@@ -10,16 +10,56 @@ import (
 
 // Office365ConnectorCard represents https://docs.microsoft.com/en-us/microsoftteams/platform/task-modules-and-cards/cards/cards-reference#example-office-365-connector-card
 type Office365ConnectorCard struct {
-	Context         string    `json:"@context"`
-	Type            string    `json:"@type"`
-	Title           string    `json:"title"`
-	ExpectedActors  []string  `json:"expectedActors,omitempty"`
-	Text            string    `json:"text"`
-	Summary         string    `json:"summary"`
-	ThemeColor      string    `json:"themeColor"`
-	Sections        []Section `json:"sections,omitempty"`
-	PotentialAction []Action  `json:"potentialAction,omitempty"`
+	Type        string        `json:"type"`
+	Attachments []interface{} `json:"attachments"`
 }
+
+/*
+{
+   "type":"message",
+   "attachments":[
+      {
+         "contentType":"application/vnd.microsoft.card.adaptive",
+         "contentUrl":null,
+         "content":{
+            "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+            "type": "AdaptiveCard",
+            "version": "1.6",
+            "body": [
+                {
+                    "type": "TextBlock",
+                    "text": "Prometheus Alert ({{ .Status | title }}) - {{ .CommonLabels.alertname }}{{- if .CommonLabels.job -}} for {{ .CommonLabels.job }}{{ end }}",
+                    "size": "Large"
+                },
+                {
+                    "type": "TextBlock",
+                    "text": "{{- if eq .CommonAnnotations.summary "" -}}
+                  {{- if eq .CommonAnnotations.message "" -}}
+                    {{- if eq .CommonLabels.alertname "" -}}
+                      Prometheus Alert
+                    {{- else -}}
+                      {{- .CommonLabels.alertname -}}
+                    {{- end -}}
+                  {{- else -}}
+                    {{- .CommonAnnotations.message -}}
+                  {{- end -}}
+              {{- else -}}
+                  {{- .CommonAnnotations.summary -}}
+              {{- end -}}",
+                    "weight": "Bolder",
+                    "color": "Warning",
+                    "fontType": "Monospace",
+                    "size": "Medium",
+                    "isSubtle": false,
+                    "separator": true,
+                    "wrap": true
+                }
+            ]
+         }
+      }
+   ]
+}
+*/
 
 // Image represents https://docs.microsoft.com/en-us/outlook/actionable-messages/message-card-reference#image-object
 type Image struct {
@@ -67,21 +107,21 @@ func NewCreatorLoggingMiddleware(l log.Logger, n Converter) Converter {
 
 func (l loggingMiddleware) Convert(ctx context.Context, a webhook.Message) (c Office365ConnectorCard, err error) {
 	defer func(begin time.Time) {
-		if len(c.PotentialAction) > 5 {
-			l.logger.Log(
-				"warning", "There can only be a maximum of 5 actions in a potentialAction collection",
-				"actions", c.PotentialAction,
-			)
-		}
+		// if len(c.PotentialAction) > 5 {
+		// 	l.logger.Log(
+		// 		"warning", "There can only be a maximum of 5 actions in a potentialAction collection",
+		// 		"actions", c.PotentialAction,
+		// 	)
+		// }
 
-		for _, s := range c.Sections {
-			if len(s.PotentialAction) > 5 {
-				l.logger.Log(
-					"warning", "There can only be a maximum of 5 actions in a potentialAction collection",
-					"actions", s.PotentialAction,
-				)
-			}
-		}
+		// for _, s := range c.Sections {
+		// 	if len(s.PotentialAction) > 5 {
+		// 		l.logger.Log(
+		// 			"warning", "There can only be a maximum of 5 actions in a potentialAction collection",
+		// 			"actions", s.PotentialAction,
+		// 		)
+		// 	}
+		// }
 
 		l.logger.Log(
 			"alert", a,
